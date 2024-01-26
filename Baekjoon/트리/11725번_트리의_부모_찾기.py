@@ -1,26 +1,22 @@
-import sys
-
-adjMat = []
-parentArr = []
-
-def insertEdge(adjMat, v1, v2):
-  adjMat[v1][v2] = adjMat[v2][v1] = True
-  
-def searchParent(adjMat, parentArr, start, length):
-  for i in range(1, length+1):
-    if adjMat[start][i] and not parentArr[i]:
-      parentArr[i] = start
-      searchParent(adjMat, parentArr, i, n)
-
 n = int(input())
-adjMat = [[False for i in range(n+1)] for j in range(n+1)]
-parentArr = [False for i in range(n+1)]
+parent = [False for i in range(n+1)]
+adjMat = [False] + [[] for i in range(1, n+1)]
+visited = [False for i in range(n+1)]
+visited[1] = True
+queue = [1]
 
 for i in range(n-1):
-  v1, v2 = map(int, sys.stdin.readline().split())
-  insertEdge(adjMat, v1, v2)
+  n1, n2 = map(int, input().split())
+  adjMat[n1].append(n2)
+  adjMat[n2].append(n1)
 
-searchParent(adjMat, parentArr, 1, n)
+while queue:
+  node = queue.pop()
+  for j in adjMat[node]:
+    if not visited[j]:
+      queue.append(j)
+      visited[j] = True
+      parent[j] = node
 
 for i in range(2, n+1):
-  print(parentArr[i])
+  print(parent[i])
