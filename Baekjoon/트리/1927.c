@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define M 100000
 
@@ -18,7 +19,7 @@ void init(LinkedList *L) {
 }
 
 int isEmpty(LinkedList *L) {
-    return L->index = 0;
+    return L->index == 0;
 }
 
 int isFull(LinkedList *L) {
@@ -26,20 +27,23 @@ int isFull(LinkedList *L) {
 }
 
 void insert(LinkedList *L, int e) {
-    if (!isFull(L))
+    if (isFull(L))
         return;
+    
     Node *newNode = (Node*)malloc(sizeof(Node));
     newNode->data = e;
-    newNode->link = L->head;
+    newNode->link = NULL;
 
     if (isEmpty(L))
         L->head = newNode;
-    else {
-        Node *p = NULL;
-        while (e > newNode->link->data) {
-            p = newNode->link;
-            newNode->link = newNode->link->link;
-        }
+    else if (e < L->head->data) {
+        newNode->link = L->head;
+        L->head = newNode;
+    } else {
+        Node *p = L->head;
+        while (p->link != NULL && e > p->link->data)
+            p = p->link;
+        newNode->link = p->link;
         p->link = newNode;
     }
 
@@ -47,10 +51,18 @@ void insert(LinkedList *L, int e) {
 }
 
 int pop(LinkedList *L) {
-
+    if (isEmpty(L))
+        return 0;
+    int e = L->head->data;
+    // Node *p = L->head;
+    L->head = L->head->link;
+    L->index--;
+    // free(p);
+    return e;
 }
 
 void print(LinkedList *L) {
+    printf("Linked List: ");
     Node *p = L->head;
     for (int i = 0; i < L->index; i++) {
         printf("%d ", p->data);
@@ -58,6 +70,7 @@ void print(LinkedList *L) {
     }
     printf("\n");
 }
+
 
 int main() {
     LinkedList L;
@@ -70,7 +83,8 @@ int main() {
         if (x)
             insert(&L, x);
         else
-            printf("%d", pop(&L));
+            printf("%d\n", pop(&L));
+        // print(&L);
     }
 
     return 0;
